@@ -30,15 +30,17 @@ app.post('/search', function(req, res) {
     client.search({
         index: 'docs',
         body: {
+            from: req.body.from,
             query: {
                 match: { content: query }
             },
             highlight: {
-                pre_tags: ["<b>"], 
+                pre_tags: ["<b>"],
                 post_tags: ["</b>"],
                 fields: {
                     content: {}
-                }
+                },
+                fragment_size: 0,
             }
         }
     }, (err, results) => {
@@ -49,9 +51,9 @@ app.post('/search', function(req, res) {
             });
             return;
         }
-        let hits = results.body.hits.hits;
-        console.log(hits);
-        results = hits.map(hit => {
+        let hits = results.body.hits;
+        let total = hits.total.value;
+        hits = hits.hits.map(hit => {
             let content = hit.highlight.content[0].split(' ').map(x => {
                 x = x.split('_')[0];
                 if (x.startsWith('<b>')) x += '</b>';
@@ -63,8 +65,10 @@ app.post('/search', function(req, res) {
                 content: content,
             }
         })
+        console.log(hits);
         res.json({
-            results: results,
+            total: total,
+            hits: hits,
         })
     });
 })
