@@ -26,7 +26,7 @@ void showhelp(){
 }
 
 int main (int argc,char **argv) {
-
+    std::ios::sync_with_stdio(false);
     char* user_specified_dict_name=NULL;
     char* model_path_char = NULL;
     char* input_path = NULL;
@@ -86,7 +86,7 @@ int main (int argc,char **argv) {
     std::vector<std::string> raws;
     while (getline(cin, raw)) raws.push_back(raw);
     using namespace indicators;
-    int mod = 5000;
+    int mod = 4000;
     ProgressBar bar{
         option::BarWidth{50},
         option::Start{"["},
@@ -101,18 +101,23 @@ int main (int argc,char **argv) {
         option::ShowPercentage{true},
         option::ShowElapsedTime{true},
         option::ShowRemainingTime{true},
+        option::Stream{std::cerr},
     };
 
     int cnt = 0;
     for (const auto &raw: raws) {
         lac.cut(raw, result);
-        std::vector<std::string> tokens;
+        std::string content;
         for (const auto &[word, pos]: result) {
-            tokens.push_back(word);
-            tokens.push_back(word + std::string(1, separator) + pos);
+            if (word == "\n" || word == " ") continue;
+            if (!content.empty()) content += " ";
+            content += word + "_" + pos;
         }
         cnt++;
         if (cnt % mod == 0) bar.tick();
+        using nlohmann::json;
+        json index = {{"index", {{"_id", cnt}}}}, data = {{"content", content}};
+        cout << index.dump() << endl << data.dump() << endl;
     }
     clock_t end = clock();
     double duration = (double)(end - start) / CLOCKS_PER_SEC;

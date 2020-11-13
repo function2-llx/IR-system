@@ -32,3 +32,5 @@ thulac
 thulac_test
 train_c
 models
+docs*.json
+*.zip
