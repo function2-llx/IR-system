@@ -1,7 +1,7 @@
 # IR-system
 信息检索课程项目
 
-<em class="hlt1">创建</em>索引
+创建索引
 
 创建索引
 

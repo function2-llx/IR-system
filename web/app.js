@@ -14,7 +14,6 @@ const client = new Client({node: 'http://localhost:9200'})
 
 app.post('/search', function(req, res) {
     let data = JSON.parse(req.body.data);
-    console.log(data);
     let tokens = data.tokens;
     let constraints = data.constraints;
     mappedTokens = []
@@ -31,7 +30,6 @@ app.post('/search', function(req, res) {
         return;
     }
 
-    console.log('query:', query);
     let must = [{match: { content: query }}];
     let must_not = [];
     let lnear = (token1, token2) => { return {match_phrase: {content: [token1, token2].join(' ')}}; };
@@ -69,8 +67,6 @@ app.post('/search', function(req, res) {
             break;
         }
     });
-    console.log('must:', must);
-    console.log('must_not:', must_not);
     client.search({
         index: 'docs',
         body: {
