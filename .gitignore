@@ -132,4 +132,3 @@ dmypy.json
 .idea/
 *.zip
 *.all
-test.json
