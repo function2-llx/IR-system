@@ -54,4 +54,4 @@ sudo systemctl start elasticsearch.service
 
 应用页面示例如下：
 
-![image-20201114232730931](report.assets/image-20201114232730931.png)
+![image-20201114232730931](report-3.assets/image-20201114232730931.png)
