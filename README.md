@@ -24,11 +24,11 @@ npm install express body-parser @elastic/elasticsearch
 node app
 ```
 
-然后访问 http://localhost:8080 即可使用系统。页面简明易用。
+然后访问 http://localhost:8080 即可使用系统，可以添加词语、约束，进行搜索，搜索结果会直接显示在页面上。
 
 ## 词语检索
 
-### 分词及词性标注
+### 分词及词性标注（第三次）
 
 基于 THULAC 进行分词和词性标注，代码已经整合到本项目中。将人民日报语料文件 `rmrb1946-2003-delrepeat.all` 放在项目目录下，进行分词并生成适用于 Elasticsearch Bulk API 的文件至 `docs.json` 的命令是：
 
@@ -37,6 +37,10 @@ cd cut
 make
 ./thulac -input ../rmrb1946-2003-delrepeat.all -output docs.json 
 ```
+
+### 依存关系分析（第五次）
+
+第五次作业重新使用了 LTP 进行了分词、词性标注，并进行了依存关系分析，进入 `word` 文件夹后运行 `dep.py` 可以完成这些工作，并将结果保存在目录下的 `corpus.json` 中。
 
 ### 创建索引
 
@@ -54,20 +58,4 @@ cd cut
 pip install elasticsearch
 python index.py
 ```
-
-## 相似句子检索
-
-第五次作业在原有系统基础上实现了相似句子检索功能，实现算法为对文档集中的每个文档使用 transformer 计算其文档表示，对于每个查询对其用同样方法计算其表示，再计算其与文档集中的文档的余弦相似度。系统使用了一种[中文 BERT](https://github.com/ymcui/MacBERT) 来计算文档表示。
-
-下图的结果可以看出，当输入为反问句时，能检索出很多反问句。
-
-![image-20201213170849846](README.assets/image-20201213170849846.png)
-
-下图结果可以看出，当输入为`四川省省长`和`美国总统访华`时，输出了很多相似结构的短语或句子：
-
-![image-20201213171001023](README.assets/image-20201213171001023.png)
-
-![image-20201213171128816](README.assets/image-20201213171128816.png)
-
-![image-20201213171220524](README.assets/image-20201213171220524.png)
 

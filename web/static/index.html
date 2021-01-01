@@ -64,12 +64,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="./word.html">词语搜索<span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="./sentence.html">句子搜索</a>
-                    </li>
+                    <a class="nav-link" href="#">主页<span class="sr-only">(current)</span></a>
                 </ul>
             </div>
         </nav>
@@ -84,45 +79,62 @@
                 <button type="button" class="btn btn-dark" id="perform-search">进行搜索</button>
             </div>
             <div class="row" >
-                <div class="col-sm" id="search-tokens">
+                <div class="col-8" id="search-tokens">
                     <div style="visibility:hidden; height: 0px;" id="token-template">
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"></span>
                             </div>
-                            <input type="text" class="form-control" placeholder="输入词语">
-                            <select class="custom-select">
+                            <input type="text" class="form-control" id="token-input" placeholder="输入词语">
+                            <select class="custom-select" id="pos-select">
                                 <option value="" selected>选择词性</option>
-                                <option value=n>名词</option>
-                                <option value=np>人名</option>
-                                <option value=ns>地名</option>
-                                <option value=ni>机构名</option>
-                                <option value=nz>其它专名</option>
-                                <option value=m>数词</option>
-                                <option value=q>量词</option>
-                                <option value=mq>数量词</option>
-                                <option value=t>时间词</option>
-                                <option value=f>方位词</option>
-                                <option value=s>处所词</option>
-                                <option value=v>动词</option>
-                                <option value=vm>能愿动词</option>
-                                <option value=vd>趋向动词</option>
-                                <option value=a>形容词</option>
-                                <option value=d>副词</option>
-                                <option value=h>前接成分</option>
-                                <option value=k>后接成分</option>
-                                <option value=i>习语</option>
-                                <option value=j>简称</option>
-                                <option value=r>代词</option>
-                                <option value=c>连词</option>
-                                <option value=p>介词</option>
-                                <option value=u>助词</option>
-                                <option value=y>语气助词</option>
-                                <option value=e>叹词</option>
-                                <option value=o>拟声词</option>
-                                <option value=g>语素</option>
-                                <option value=w>标点</option>
-                                <option value=x>其它</option>
+                                <option value=a>adjective</option>
+                                <option value=ni>organization name</option>
+                                <option value=b>other noun-modifier</option>
+                                <option value=nl>location noun</option>
+                                <option value=c>conjunction</option>
+                                <option value=ns>geographical name</option>
+                                <option value=d>adverb</option>
+                                <option value=nt>temporal noun</option>
+                                <option value=e>exclamation</option>
+                                <option value=nz>other proper noun</option>
+                                <option value=g>morpheme</option>
+                                <option value=o>onomatopoeia</option>
+                                <option value=h>prefix</option>
+                                <option value=p>preposition</option>
+                                <option value=i>idiom</option>
+                                <option value=q>quantity</option>
+                                <option value=j>abbreviation</option>
+                                <option value=r>pronoun</option>
+                                <option value=k>suffix</option>
+                                <option value=u>auxiliary</option>
+                                <option value=m>number</option>
+                                <option value=v>verb</option>
+                                <option value=n>general noun</option>
+                                <option value=wp>punctuation</option>
+                                <option value=nd>direction noun</option>
+                                <option value=ws>foreign words</option>
+                                <option value=nh>person name</option>
+                                <option value=x>non-lexeme</option>
+                            
+                            </select>
+                            <input type="text" class="form-control" id="dep-head-input" placeholder="输入依赖头">
+                            <select class="custom-select" id="dep-rel-select">
+                                <option value="" selected>选择依赖关系</option>
+                                <option value=SBV>主谓关系</option>
+                                <option value=VOB>动宾关系</option>
+                                <option value=IOB>间宾关系</option>
+                                <option value=FOB>前置宾语</option>
+                                <option value=DBL>兼语</option>
+                                <option value=ATT>定中关系</option>
+                                <option value=ADV>状中结构</option>
+                                <option value=CMP>动补结构</option>
+                                <option value=COO>并列关系</option>
+                                <option value=POB>介宾关系</option>
+                                <option value=LAD>左附加关系</option>
+                                <option value=RAD>右附加关系</option>
+                                <option value=IS>独立结构</option>
+                                <option value=HED>核心关系</option>
                             </select>
                             <div class="input-group-append">
                                 <button class="btn btn-danger btn-remove-token" type="button"
@@ -131,7 +143,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm" id="search-constraints">
+                <div class="col-4" id="search-constraints">
                     <div style="visibility:hidden; height: 0px;" id="constraint-template">
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="编号1">
@@ -248,9 +260,11 @@
             $("#results-body").children().empty();
             let tokens = Array.from($("#search-tokens").children(".input-group"), x => {
                 var x = $(x);
-                let token = x.children(".form-control").val();
-                let pos = x.find("option:selected").val();
-                return [token, pos];
+                let token = x.children("#token-input").val();
+                let pos = x.children("#pos-select").children("option:selected").val();
+                let depHead = x.children("#dep-head-input").val();
+                let depRel = x.children("#dep-rel-select").children("option:selected").val();
+                return [token, pos, depHead, depRel];
             });
             let constraints = Array.from(
                 $("#search-constraints").children(".input-group"),

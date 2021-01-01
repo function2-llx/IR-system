@@ -5,18 +5,44 @@
                 "pos": {
                    "type" : "pattern_capture",
                    "preserve_original" : true,
-                   "patterns" : ["([^_]*)_?([a-z]*)"]
+                   "patterns" : ["^(([^\\t]*)\\t([^\\t]*))"]
+                },
+                "dep0": {
+                    "type": "pattern_replace",
+                    "pattern": "^([^\\t]*)\\t[^\\t]*\\t(.*)",
+                    "replacement": "$1\t$2",
+                    "all": false
+                },
+                "dep1": {
+                    "type": "pattern_replace",
+                    "pattern": "^[^\\t]*\\t([^\\t]*)\\t(.*)",
+                    "replacement": "$1\t$2",
+                    "all": false
+                },
+                "pos_dep": {
+                    "type": "multiplexer",
+                    "filters": [ "pos", "dep0", "dep1" ]
                 }
-             },
+            },
+            "tokenizer": {
+                "space": {
+                    "type": "char_group",
+                    "tokenize_on_chars": [" "]
+                }
+            },
             "analyzer": {
-                "pos": {
+                "space": {
                     "type": "custom",
-                    "tokenizer": "whitespace",
+                    "tokenizer": "space",
+                    "filter": [ "lowercase" ]
+                },
+                "pos_dep": {
+                    "type": "custom",
+                    "tokenizer": "space",
                     "filter": [
                         "lowercase",
-                        "pos"
-                    ],
-                    "position_increment_gap": 0
+                        "pos_dep"
+                    ]
                 }
             }
         }
@@ -25,12 +51,8 @@
         "properties": {
             "content": {
                 "type": "text",
-                "analyzer": "pos",
-                "search_analyzer": "whitespace"
-            },
-            "content_vector": {
-                "type": "dense_vector",
-                "dims": 768
+                "analyzer": "pos_dep",
+                "search_analyzer": "space"
             }
         }
     }
